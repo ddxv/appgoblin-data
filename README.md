@@ -1,2 +1,60 @@
 # appgoblin-data
-Free Data Dumps from AppGoblin
+Free Data Dumps from AppGoblin. Hope these help someone else. They can be periodically updated as well if there is interest.
+
+## Apps data
+
+### Basic App Info
+- `store`: The app store (e.g., "google" for Google Play Store)
+- `store_id`: Unique identifier/package name for the app
+- `app_name`: Display name of the app
+- `app_category`: Category of the app (e.g., tools, video_players)
+
+### Developer Info
+- `developer_id`: Unique identifier for the developer
+- `developer_name`: Name of the developer/company
+- `developer_email`: Contact email for the developer
+
+### Performance Metrics
+- `rating`: Average user rating (out of 5)
+- `review_count`: Number of written reviews
+- `rating_count`: Total number of ratings
+- `installs`: Number of installations
+
+### App Properties
+- `free`: Boolean indicating if the app is free
+- `price`: Price of the app (0 for free apps)
+- `minimum_android`: Required Android version
+- `ad_supported`: Boolean indicating if app contains ads
+- `in_app_purchases`: Boolean indicating if app has IAPs
+- `editors_choice`: Boolean indicating if selected as editor's choice
+
+### Timestamps
+- `store_last_updated`: When the app was last updated in the store
+- `release_date`: Initial release date
+- `appgoblin_created_at`: When the app was first added to AppGoblin
+- `appgoblin_updated_at`: When the app was last updated in AppGoblin
+- `last_crawl_result`: Status of the most recent data crawl
+
+## Companies data
+
+### Column Descriptions
+- `store_id`: Unique identifier/package name for the app
+- `app_category`: Category of the app (e.g., game_action, tools)
+- `company_domain`: Primary web domain of the company
+- `company_name`: Name of the company
+- `parent_company_name`: Parent company or holding company name
+- `tag_source`: Source of the company data (app_ads_direct, app_ads_reseller, or sdk)
+
+The data comes from three tag_sources:
+- app_ads_direct: Direct advertising relationships
+- app_ads_reseller: Indirect advertising through resellers
+- sdk: Software Development Kits integrated in the app
+
+| store_id | app_category | company_domain | company_name | parent_company_name | tag_source |
+|----------|--------------|----------------|--------------|-------------------|------------|
+| com.example.app | game_action | yandex.com | Yandex | Yandex | app_ads_direct |
+| com.example.app | game_action | yandex.com | Yandex | Yandex | app_ads_reseller |
+| com.example.app | game_action | ironsrc.com | ironSource | Unity Ads | app_ads_direct |
+| com.example.app | game_action | yahoo.com | Yahoo! | Yahoo! | app_ads_direct |
+| com.example.app | game_action | yahoo.com | Yahoo! | Yahoo! | app_ads_reseller |
+| com.example.app | game_action | verve.com | Verve Group | Verve Group | app_ads_reseller |

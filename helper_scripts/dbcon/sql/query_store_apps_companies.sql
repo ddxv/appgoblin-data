@@ -1,6 +1,5 @@
 SELECT
     sa.store_id,
-    sa.category AS app_category,
     csac.ad_domain AS company_domain,
     c.name AS company_name,
     pc.name AS parent_company_name,
@@ -13,4 +12,5 @@ LEFT JOIN adtech.companies c ON
     csac.company_id = c.id
 LEFT JOIN adtech.companies pc ON
     csac.parent_id = pc.id
+WHERE sa.crawl_result = 1
 ;

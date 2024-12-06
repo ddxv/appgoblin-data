@@ -1,8 +1,11 @@
 SELECT
     s.name AS store,
     sa.store_id AS store_id,
+    sa.name AS app_name,
     d.developer_id,
-    sa.minimum_android,
+    d.name AS developer_name,
+    sa.category AS app_category,
+    sa.price,
     sa.developer_email,
     sa.store_last_updated,
     sa.ad_supported,
@@ -18,4 +21,5 @@ LEFT JOIN stores s ON sa.store = s.id
 WHERE 
 -- store app names are null when recently added and not yet crawled
 sa.name IS NOT NULL
+AND sa.crawl_result = 1
 ;

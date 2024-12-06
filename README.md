@@ -1,7 +1,14 @@
 # appgoblin-data
 Free Data Dumps from AppGoblin. Hope these help someone else. They can be periodically updated as well if there is interest.
 
-## Apps data
+## Data files
+
+Due to 100mb limits, files are compressed and do not contain 'all' the data. 
+
+- `live_store_apps.tsv.xz`: Apps that are currently live on the store, since there are fewer apps, I included more data such as names and categories.
+- `store_apps.tsv.xz`: All apps in the database, many of which are no longer live on the stores, but without names and categories.
+
+## Column Descriptions
 
 ### Basic App Info
 - `store`: The app store (e.g., "google" for Google Play Store)

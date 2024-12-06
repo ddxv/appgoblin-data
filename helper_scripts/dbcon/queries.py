@@ -29,6 +29,9 @@ QUERY_STORE_APPS = load_sql_file(
 QUERY_APPS_COMPANIES = load_sql_file(
     "query_store_apps_companies.sql",
 )
+QUERY_LIVE_STORE_APPS = load_sql_file(
+    "query_live_store_apps.sql",
+)
 
 
 def query_store_apps() -> pd.DataFrame:
@@ -41,8 +44,12 @@ def query_store_apps_companies() -> pd.DataFrame:
     df = pd.read_sql(QUERY_APPS_COMPANIES, con=DBCON.engine)
     return df
 
+def query_live_store_apps() -> pd.DataFrame:
+    """Get all apps and developer info."""
+    df = pd.read_sql(QUERY_LIVE_STORE_APPS, con=DBCON.engine)
+    return df
 
 
 logger.info("set db engine")
-DBCON = get_db_connection("madrone")
+DBCON = get_db_connection("madrone-home")
 DBCON.set_engine()

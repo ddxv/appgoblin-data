@@ -1,5 +1,5 @@
-# appgoblin-data
-Free Data Dumps from AppGoblin. Hope these help someone else. They can be periodically updated as well if there is interest.
+# Free Data Dumps from AppGoblin (requests available)
+Free Data Dumps from [AppGoblin](https://appgoblin.info) database of android and ios apps and the SDKs they use. They can be periodically updated as well if there is interest.
 
 ## Data files
 

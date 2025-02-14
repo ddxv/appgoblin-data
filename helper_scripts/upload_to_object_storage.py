@@ -1,9 +1,9 @@
-import io
 from dbcon.queries import get_company_adstxt_publisher_id_apps_raw, query_ad_domains
 from config import get_logger, CONFIG
 import boto3
 import pandas as pd
 from typing import Iterator
+import os
 
 logger = get_logger(__name__)
 BUCKET_NAME = "appgoblin-data"
@@ -16,33 +16,6 @@ def get_data_in_chunks(company_domain: str) -> Iterator[pd.DataFrame]:
         ad_domain_url=company_domain, chunksize=CHUNK_SIZE
     ):
         yield chunk
-
-
-def upload_to_s3(
-    client: boto3.client, data: str, company_domain: str, is_first_chunk: bool = False
-) -> bool:
-    """Upload data to S3 with append functionality."""
-    try:
-        s3_key = f"app-ads-txt/domains/domain={company_domain}/latest.csv"
-
-        # For first chunk, use put_object to create/overwrite file
-        if is_first_chunk:
-            response = client.put_object(Body=data, Bucket=BUCKET_NAME, Key=s3_key)
-        # For subsequent chunks, use append operation
-        else:
-            # Get existing object
-            existing_obj = client.get_object(Bucket=BUCKET_NAME, Key=s3_key)
-            # Append new data
-            updated_data = existing_obj["Body"].read().decode("utf-8") + data
-
-            response = client.put_object(
-                Body=updated_data, Bucket=BUCKET_NAME, Key=s3_key
-            )
-
-        return response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200
-    except Exception as e:
-        logger.error(f"Error uploading to S3: {str(e)}")
-        return False
 
 
 def get_s3_client() -> boto3.client:
@@ -58,26 +31,20 @@ def get_s3_client() -> boto3.client:
 
 
 def update_company_csv(company_domain: str) -> None:
-    """Update company CSV in chunks to avoid memory issues."""
+    """Update company CSV by first writing locally then uploading to S3."""
     client = get_s3_client()
-    is_first_chunk = True
+    output_file = "latest.csv"
 
     try:
-        for chunk in get_data_in_chunks(company_domain):
-            # Convert chunk to CSV string
-            csv_buffer = io.StringIO()
-            chunk.to_csv(csv_buffer, index=False, header=is_first_chunk)
+        is_first_chunk = True
+        with open(output_file, "w") as f:
+            for chunk in get_data_in_chunks(company_domain):
+                chunk.to_csv(f, index=False, header=is_first_chunk)
+                is_first_chunk = False
 
-            # Upload chunk
-            success = upload_to_s3(
-                client, csv_buffer.getvalue(), company_domain, is_first_chunk
-            )
-
-            if not success:
-                logger.error(f"Failed to upload chunk for {company_domain}")
-                return
-
-            is_first_chunk = False
+        # Upload the complete file to S3
+        s3_key = f"app-ads-txt/domains/domain={company_domain}/latest.csv"
+        client.upload_file("latest.csv", Bucket=BUCKET_NAME, Key=s3_key)
 
     except Exception as e:
         logger.error(f"Error processing {company_domain}: {str(e)}")

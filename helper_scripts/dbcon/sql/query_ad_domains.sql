@@ -18,5 +18,5 @@ FROM
     my_counts
 WHERE app_count > 10
 ORDER BY
-    app_count DESC    
+    app_count
 ;

@@ -84,5 +84,5 @@ def get_company_adstxt_publisher_id_apps_raw(
 
 
 logger.info("set db engine")
-DBCON = get_db_connection("madrone-write", use_ssh_tunnel=False)
+DBCON = get_db_connection(use_ssh_tunnel=False)
 DBCON.set_engine()

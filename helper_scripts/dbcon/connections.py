@@ -12,7 +12,9 @@ logger = get_logger(__name__)
 class PostgresCon:
     """Class for managing the connection to PostgreSQL."""
 
-    def __init__(self, db_name: str, db_ip: str, db_port: str, server_name: str) -> None:
+    def __init__(
+        self, db_name: str, db_ip: str, db_port: str, server_name: str
+    ) -> None:
         """
         Initialize the PostgreSQL connection.
 
@@ -60,7 +62,7 @@ def get_db_connection(use_ssh_tunnel: bool = False) -> PostgresCon:
     Returns:
         PostgresCon: A PostgreSQL connection object.
     """
-    server_name = "madrone-home"
+    server_name = "madrone-write"
     host = CONFIG[server_name]["host"]
     database_name = CONFIG[server_name]["db_name"]
 

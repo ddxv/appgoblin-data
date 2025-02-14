@@ -1,7 +1,7 @@
 """Query database for backend API."""
 
 import pathlib
-
+from typing import Iterator, Union
 import numpy as np
 
 import pandas as pd
@@ -63,23 +63,54 @@ def query_ad_domains() -> pd.DataFrame:
 
 
 def get_company_adstxt_publisher_id_apps_raw(
-    ad_domain_url: str,
-) -> pd.DataFrame:
-    """Get ad domain publisher id."""
-    df = pd.read_sql(
-        QUERY_COMPANY_ADSTXT_PUBLISHER_ID,
+    ad_domain_url: str, chunksize: Union[int, None] = None
+) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
+    """
+    Get ad domain publisher id with optional chunked processing.
+
+    Args:
+        ad_domain_url: Domain URL to query
+        chunksize: If provided, returns an iterator of DataFrames with specified chunk size
+                  If None, returns a single DataFrame
+    """
+    # Convert the SQL query to use parameters safely
+    query = text(QUERY_COMPANY_ADSTXT_PUBLISHER_ID)
+
+    # Read from database in chunks if chunksize is specified
+    df_iterator = pd.read_sql(
+        query,
         DBCON.engine,
-        params={
-            "ad_domain_url": ad_domain_url,
-        },
+        params={"ad_domain_url": ad_domain_url},
+        chunksize=chunksize,
     )
+
+    if chunksize is None:
+        # If no chunking, process the entire DataFrame at once
+        df = next(df_iterator)
+        return process_dataframe(df)
+    else:
+        # If chunking, return a generator that processes each chunk
+        return (process_dataframe(chunk) for chunk in df_iterator)
+
+
+def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Process a DataFrame chunk with the required transformations.
+    """
+    # Create a copy to avoid modifying the original DataFrame
+    df = df.copy()
+
+    # Apply transformations
     df["store"] = df["store"].replace({1: "Android", 2: "iOS"})
     df["developer_id"] = df["developer_id"].astype(str)
-    df["store_url"] = np.where(
-        df["store"] == "Android",
-        "https://play.google.com/store/apps/details?id=" + df["store_id"],
-        "https://apps.apple.com/-/app/-/id" + df["store_id"],
-    )
+
+    # Use numpy.select for more efficient conditional logic
+    conditions = [df["store"] == "Android"]
+    choices = ["https://play.google.com/store/apps/details?id=" + df["store_id"]]
+    default = "https://apps.apple.com/-/app/-/id" + df["store_id"]
+
+    df["store_url"] = np.select(conditions, choices, default=default)
+
     return df
 
 

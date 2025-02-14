@@ -74,11 +74,10 @@ def get_company_adstxt_publisher_id_apps_raw(
                   If None, returns a single DataFrame
     """
     # Convert the SQL query to use parameters safely
-    query = text(QUERY_COMPANY_ADSTXT_PUBLISHER_ID)
 
     # Read from database in chunks if chunksize is specified
     df_iterator = pd.read_sql(
-        query,
+        QUERY_COMPANY_ADSTXT_PUBLISHER_ID,
         DBCON.engine,
         params={"ad_domain_url": ad_domain_url},
         chunksize=chunksize,

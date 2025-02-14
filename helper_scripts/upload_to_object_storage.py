@@ -14,6 +14,7 @@ def update_all_company_csvs() -> None:
     ad_domains = query_ad_domains()
 
     for row in ad_domains.iterrows():
+        logger.info(f"Updating {row.company_domain}")
         company_domain = row.company_domain
         update_company_csv(company_domain)
 

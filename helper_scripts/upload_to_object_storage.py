@@ -7,7 +7,7 @@ from typing import Iterator
 
 logger = get_logger(__name__)
 BUCKET_NAME = "appgoblin-data"
-CHUNK_SIZE = 100000  # Adjust based on your available memory
+CHUNK_SIZE = 1000000
 
 
 def get_data_in_chunks(company_domain: str) -> Iterator[pd.DataFrame]:

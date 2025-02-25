@@ -56,7 +56,17 @@ def update_all_company_csvs() -> None:
 
     for _, row in ad_domains.iterrows():
         logger.info(f"Updating {row.company_domain}")
-        update_company_csv(row.company_domain)
+        try:
+            update_company_csv(row.company_domain)
+        except Exception as e:
+            logger.error(f"Error processing {row.company_domain}: {str(e)}")
+
+    try:
+        os.system(
+            "s3cmd setacl s3://appgoblin-data/app-ads-txt/ --acl-public --recursive"
+        )
+    except Exception as e:
+        logger.error(f"Error setting ACL: {str(e)}")
 
 
 if __name__ == "__main__":

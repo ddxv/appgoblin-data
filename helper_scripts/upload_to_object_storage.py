@@ -73,7 +73,7 @@ def update_all_company_csvs() -> None:
         except Exception as e:
             logger.error(f"Error processing {row.company_domain}: {str(e)}")
 
-        update_permissions(row.company_domain)
+    update_permissions(row.company_domain)
 
 
 def update_single_company_csv(company_domain: str) -> None:
@@ -87,7 +87,7 @@ def update_single_company_csv(company_domain: str) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--company_domain", type=str, required=True)
+    parser.add_argument("--company_domain", type=str, required=False)
     return parser.parse_args()
 
 

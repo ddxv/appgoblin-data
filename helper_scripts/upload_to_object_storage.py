@@ -4,6 +4,7 @@ import boto3
 import pandas as pd
 from typing import Iterator
 import os
+import argparse
 
 logger = get_logger(__name__)
 BUCKET_NAME = "appgoblin-data"
@@ -38,16 +39,27 @@ def update_company_csv(company_domain: str) -> None:
     try:
         is_first_chunk = True
         with open(output_file, "w") as f:
-            for chunk in get_data_in_chunks(company_domain):
-                chunk.to_csv(f, index=False, header=is_first_chunk)
-                is_first_chunk = False
+            try:
+                for chunk in get_data_in_chunks(company_domain):
+                    chunk.to_csv(f, index=False, header=is_first_chunk)
+                    is_first_chunk = False
+            except Exception as e:
+                logger.error(f"Error writing to file: {str(e)}")
+                return
 
         # Upload the complete file to S3
         s3_key = f"app-ads-txt/domains/domain={company_domain}/latest.csv"
         client.upload_file("latest.csv", Bucket=BUCKET_NAME, Key=s3_key)
 
     except Exception as e:
-        logger.error(f"Error processing {company_domain}: {str(e)}")
+        logger.error(f"Error uploading {company_domain}: {str(e)}")
+
+
+def update_permissions(company_domain: str) -> None:
+    """Update permissions for all companies."""
+    os.system(
+        f"s3cmd setacl s3://{BUCKET_NAME}/app-ads-txt/domains/domain={company_domain}/ --acl-public --recursive"
+    )
 
 
 def update_all_company_csvs() -> None:
@@ -61,14 +73,28 @@ def update_all_company_csvs() -> None:
         except Exception as e:
             logger.error(f"Error processing {row.company_domain}: {str(e)}")
 
-    try:
-        os.system(
-            "s3cmd setacl s3://appgoblin-data/app-ads-txt/ --acl-public --recursive"
-        )
-    except Exception as e:
-        logger.error(f"Error setting ACL: {str(e)}")
+        update_permissions(row.company_domain)
+
+
+def update_single_company_csv(company_domain: str) -> None:
+    """Update CSV for a single company."""
+    logger.info(f"Starting update for {company_domain}")
+    update_company_csv(company_domain)
+    logger.info(f"Updated CSV for {company_domain}")
+    update_permissions(company_domain)
+    logger.info(f"Updated permissions for {company_domain}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--company_domain", type=str, required=True)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
     logger.info("start")
-    update_all_company_csvs()
+    args = parse_args()
+    if args.company_domain:
+        update_single_company_csv(args.company_domain)
+    else:
+        update_all_company_csvs()

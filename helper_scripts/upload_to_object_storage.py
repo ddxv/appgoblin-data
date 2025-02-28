@@ -55,11 +55,16 @@ def update_company_csv(company_domain: str) -> None:
         logger.error(f"Error uploading {company_domain}: {str(e)}")
 
 
-def update_permissions(company_domain: str) -> None:
+def update_permissions(company_domain: str | None) -> None:
     """Update permissions for all companies."""
-    os.system(
-        f"s3cmd setacl s3://{BUCKET_NAME}/app-ads-txt/domains/domain={company_domain}/ --acl-public --recursive"
-    )
+    if company_domain:
+        os.system(
+            f"s3cmd setacl s3://{BUCKET_NAME}/app-ads-txt/domains/domain={company_domain}/ --acl-public --recursive"
+        )
+    else:
+        os.system(
+            f"s3cmd setacl s3://{BUCKET_NAME}/app-ads-txt/domains/ --acl-public --recursive"
+        )
 
 
 def update_all_company_csvs() -> None:

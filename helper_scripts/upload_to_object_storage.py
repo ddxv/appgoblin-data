@@ -78,7 +78,7 @@ def update_all_company_csvs() -> None:
         except Exception as e:
             logger.error(f"Error processing {row.company_domain}: {str(e)}")
 
-    update_permissions(row.company_domain)
+    update_permissions()
 
 
 def update_single_company_csv(company_domain: str) -> None:

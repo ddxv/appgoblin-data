@@ -55,7 +55,7 @@ def update_company_csv(company_domain: str) -> None:
         logger.error(f"Error uploading {company_domain}: {str(e)}")
 
 
-def update_permissions(company_domain: str | None) -> None:
+def update_permissions(company_domain: str | None = None) -> None:
     """Update permissions for all companies."""
     if company_domain:
         os.system(

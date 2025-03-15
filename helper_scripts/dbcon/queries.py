@@ -26,6 +26,9 @@ def load_sql_file(file_name: str) -> str:
 QUERY_STORE_APPS = load_sql_file(
     "query_store_apps.sql",
 )
+QUERY_STORE_APPS_METRICS = load_sql_file(
+    "query_store_apps_metrics.sql",
+)
 QUERY_APPS_COMPANIES = load_sql_file(
     "query_store_apps_companies.sql",
 )
@@ -41,6 +44,12 @@ QUERY_AD_DOMAINS = load_sql_file("query_ad_domains.sql")
 def query_store_apps() -> pd.DataFrame:
     """Get all apps and developer info."""
     df = pd.read_sql(QUERY_STORE_APPS, con=DBCON.engine)
+    return df
+
+
+def query_store_apps_metrics() -> pd.DataFrame:
+    """Get all apps and developer info."""
+    df = pd.read_sql(QUERY_STORE_APPS_METRICS, con=DBCON.engine)
     return df
 
 
@@ -114,5 +123,5 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 logger.info("set db engine")
-DBCON = get_db_connection(use_ssh_tunnel=False)
+DBCON = get_db_connection(use_ssh_tunnel=True)
 DBCON.set_engine()

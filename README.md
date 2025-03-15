@@ -1,4 +1,5 @@
 # Free Mobile App Store Data Dumps from AppGoblin
+
 Free Data Dumps from [AppGoblin](https://appgoblin.info) database of android and ios apps and the mobile SDKs they use for advertising, product analytics and other open source libraries. They can be periodically updated as well if there is interest.
 
 ## Data files
@@ -7,27 +8,30 @@ Due to 100mb limits, files are compressed and do not contain 'all' the data. If 
 
 - `live_store_apps.tsv.xz`: Apps that are currently live on the store, since there are fewer apps, I included more data such as names and categories.
 - `store_apps.tsv.xz`: All apps in the database, many of which are no longer live on the stores, but without names and categories.
+- `store_apps_metrics.tsv.xz`: All live apps with metrics such as installs, rating, review count from AppGoblin.
 
 ## Column Descriptions
 
 ### Basic App Info
+
 - `store`: The app store (e.g., "google" for Google Play Store)
 - `store_id`: Unique identifier/package name for the app
 - `app_name`: Display name of the app
 - `app_category`: Category of the app (e.g., tools, video_players)
 
 ### Developer Info
+
 - `developer_id`: Unique identifier for the developer
 - `developer_name`: Name of the developer/company
-- `developer_email`: Contact email for the developer
 
-### Performance Metrics
-- `rating`: Average user rating (out of 5)
+### Metrics
+
 - `review_count`: Number of written reviews
 - `rating_count`: Total number of ratings
 - `installs`: Number of installations
 
 ### App Properties
+
 - `free`: Boolean indicating if the app is free
 - `price`: Price of the app (0 for free apps)
 - `minimum_android`: Required Android version
@@ -36,6 +40,7 @@ Due to 100mb limits, files are compressed and do not contain 'all' the data. If 
 - `editors_choice`: Boolean indicating if selected as editor's choice
 
 ### Timestamps
+
 - `store_last_updated`: When the app was last updated in the store
 - `release_date`: Initial release date
 - `appgoblin_created_at`: When the app was first added to AppGoblin
@@ -45,6 +50,7 @@ Due to 100mb limits, files are compressed and do not contain 'all' the data. If 
 ## Companies data
 
 ### Column Descriptions
+
 - `store_id`: Unique identifier/package name for the app
 - `app_category`: Category of the app (e.g., game_action, tools)
 - `company_domain`: Primary web domain of the company
@@ -53,15 +59,16 @@ Due to 100mb limits, files are compressed and do not contain 'all' the data. If 
 - `tag_source`: Source of the company data (app_ads_direct, app_ads_reseller, or sdk)
 
 The data comes from three tag_sources:
+
 - app_ads_direct: Direct advertising relationships
 - app_ads_reseller: Indirect advertising through resellers
 - sdk: Software Development Kits integrated in the app
 
-| store_id | app_category | company_domain | company_name | parent_company_name | tag_source |
-|----------|--------------|----------------|--------------|-------------------|------------|
-| com.example.app | game_action | yandex.com | Yandex | Yandex | app_ads_direct |
-| com.example.app | game_action | yandex.com | Yandex | Yandex | app_ads_reseller |
-| com.example.app | game_action | ironsrc.com | ironSource | Unity Ads | app_ads_direct |
-| com.example.app | game_action | yahoo.com | Yahoo! | Yahoo! | app_ads_direct |
-| com.example.app | game_action | yahoo.com | Yahoo! | Yahoo! | app_ads_reseller |
-| com.example.app | game_action | verve.com | Verve Group | Verve Group | app_ads_reseller |
+| store_id        | app_category | company_domain | company_name | parent_company_name | tag_source       |
+| --------------- | ------------ | -------------- | ------------ | ------------------- | ---------------- |
+| com.example.app | game_action  | yandex.com     | Yandex       | Yandex              | app_ads_direct   |
+| com.example.app | game_action  | yandex.com     | Yandex       | Yandex              | app_ads_reseller |
+| com.example.app | game_action  | ironsrc.com    | ironSource   | Unity Ads           | app_ads_direct   |
+| com.example.app | game_action  | yahoo.com      | Yahoo!       | Yahoo!              | app_ads_direct   |
+| com.example.app | game_action  | yahoo.com      | Yahoo!       | Yahoo!              | app_ads_reseller |
+| com.example.app | game_action  | verve.com      | Verve Group  | Verve Group         | app_ads_reseller |

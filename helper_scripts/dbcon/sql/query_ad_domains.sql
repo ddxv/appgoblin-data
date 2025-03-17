@@ -3,7 +3,7 @@ WITH my_counts AS (
         company_domain,
         sum(app_count) AS app_count
     FROM
-        frontend.companies_app_counts cac
+        frontend.companies_category_tag_stats cac
     WHERE
         cac.tag_source IN (
             'app_ads_direct', 'app_ads_reseller'

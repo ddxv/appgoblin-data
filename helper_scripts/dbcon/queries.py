@@ -123,5 +123,5 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 logger.info("set db engine")
-DBCON = get_db_connection(use_ssh_tunnel=True)
+DBCON = get_db_connection(use_ssh_tunnel=False)
 DBCON.set_engine()

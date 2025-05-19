@@ -17,7 +17,7 @@ LEFT JOIN store_apps sa
 LEFT JOIN developers d
     ON sa.developer = d.id
 LEFT JOIN app_ads_entrys aae
-    ON aesa.app_ads_entry_id = aae.id
+    ON aesa.app_ad_entry_id = aae.id
 LEFT JOIN pub_domains pd
     ON aesa.pub_domain_id = pd.id
 LEFT JOIN ad_domains ad

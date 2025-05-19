@@ -21,7 +21,7 @@ LEFT JOIN app_ads_entrys aae
 LEFT JOIN pub_domains pd
     ON aesa.pub_domain_id = pd.id
 LEFT JOIN ad_domains ad
-    ON aae.ad_domain_id = ad.id
+    ON aesa.ad_domain_id = ad.id
 WHERE
     ad."domain" = :ad_domain_url
     AND sa.store IS NOT NULL

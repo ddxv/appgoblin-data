@@ -7,16 +7,22 @@ SELECT
     sa.rating_count,
     d.developer_id,
     d.name as developer_name,
-    aesa.developer_domain_url,
-    aesa.publisher_id,
-    aesa.relationship,
-    aesa.developer_domain_crawled_at
+    pd.url AS developer_domain_url,
+    aae.publisher_id,
+    aae.relationship,
+    pd.crawled_at AS developer_domain_crawled_at
 FROM frontend.adstxt_entries_store_apps aesa
 LEFT JOIN store_apps sa 
     ON aesa.store_app = sa.id
 LEFT JOIN developers d
     ON sa.developer = d.id
+LEFT JOIN app_ads_entrys aae
+    ON aesa.app_ads_entry_id = aae.id
+LEFT JOIN pub_domains pd
+    ON aesa.pub_domain_id = pd.id
+LEFT JOIN ad_domains ad
+    ON aae.ad_domain_id = ad.id
 WHERE
-    aesa.ad_domain_url = :ad_domain_url
+    ad."domain" = :ad_domain_url
     AND sa.store IS NOT NULL
 ;

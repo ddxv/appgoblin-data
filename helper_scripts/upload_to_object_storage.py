@@ -31,7 +31,25 @@ def get_s3_client() -> boto3.client:
     )
 
 
-def update_company_csv(company_domain: str) -> None:
+def append_to_full_csv(company_domain: str, is_first_chunk: bool = False) -> None:
+    """Update company CSV by first writing locally then uploading to S3."""
+    output_file = "latest_full.csv"
+
+    try:
+        with open(output_file, "w") as f:
+            try:
+                for chunk in get_data_in_chunks(company_domain):
+                    chunk.to_csv(f, index=False, header=is_first_chunk)
+                    is_first_chunk = False
+            except Exception as e:
+                logger.error(f"Error writing to file: {str(e)}")
+                return
+
+    except Exception as e:
+        logger.error(f"Error uploading {company_domain}: {str(e)}")
+
+
+def update_individual_company_csv(company_domain: str) -> None:
     """Update company CSV by first writing locally then uploading to S3."""
     client = get_s3_client()
     output_file = "latest.csv"
@@ -65,26 +83,35 @@ def update_permissions(company_domain: str | None = None) -> None:
         os.system(
             f"s3cmd setacl s3://{BUCKET_NAME}/app-ads-txt/domains/ --acl-public --recursive"
         )
+        os.system(
+            f"s3cmd setacl s3://{BUCKET_NAME}/app-ads-txt/full/ --acl-public --recursive"
+        )
 
 
 def update_all_company_csvs() -> None:
     """Update CSVs for all companies."""
     ad_domains = query_ad_domains()
 
+    is_first_chunk = True
     for _, row in ad_domains.iterrows():
         logger.info(f"Updating {row.company_domain}")
         try:
-            update_company_csv(row.company_domain)
+            update_individual_company_csv(row.company_domain)
+            append_to_full_csv(row.company_domain, is_first_chunk=is_first_chunk)
+            is_first_chunk = False
         except Exception as e:
             logger.error(f"Error processing {row.company_domain}: {str(e)}")
 
     update_permissions()
+    s3_key = "app-ads-txt/full/latest_full.csv"
+    client = get_s3_client()
+    client.upload_file("latest_full.csv", Bucket=BUCKET_NAME, Key=s3_key)
 
 
 def update_single_company_csv(company_domain: str) -> None:
     """Update CSV for a single company."""
     logger.info(f"Starting update for {company_domain}")
-    update_company_csv(company_domain)
+    update_individual_company_csv(company_domain)
     logger.info(f"Updated CSV for {company_domain}")
     update_permissions(company_domain)
     logger.info(f"Updated permissions for {company_domain}")

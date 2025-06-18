@@ -32,11 +32,11 @@ def get_s3_client() -> boto3.client:
 
 
 def append_to_full_csv(company_domain: str, is_first_chunk: bool = False) -> None:
-    """Update company CSV by first writing locally then uploading to S3."""
+    """Update full single CSV by appending to the existing file then uploading to S3."""
     output_file = "latest_full.csv"
 
     try:
-        with open(output_file, "w") as f:
+        with open(output_file, "a") as f:
             try:
                 for chunk in get_data_in_chunks(company_domain):
                     chunk.to_csv(f, index=False, header=is_first_chunk)

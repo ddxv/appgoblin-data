@@ -108,9 +108,13 @@ def update_all_company_csvs() -> None:
             logger.error(f"Error processing {row.company_domain}: {str(e)}")
 
     update_permissions()
-    s3_key = "app-ads-txt/full/latest_full.csv"
+    os.system("xz -6 --threads=0 --memlimit-compress=7000MiB latest_full.csv")
+    s3_key = "app-ads-txt/full/latest_full.csv.xz"
     client = get_s3_client()
-    client.upload_file("latest_full.csv", Bucket=BUCKET_NAME, Key=s3_key)
+    client.upload_file("latest_full.csv.xz", Bucket=BUCKET_NAME, Key=s3_key)
+    os.system(
+        "s3cmd setacl s3://appgoblin-data/app-ads-txt/full/ --acl-public --recursive"
+    )
 
 
 def update_single_company_csv(company_domain: str) -> None:

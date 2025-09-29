@@ -1,13 +1,13 @@
 # Free Mobile App Store Data Dumps from AppGoblin
 
-Free Data Dumps from [AppGoblin](https://appgoblin.info) database of android and ios apps and the mobile SDKs they use for advertising, product analytics and other open source libraries. They can be periodically updated as well if there is interest.
+Free Data Dumps from [AppGoblin](https://appgoblin.info). AppGoblin is a resource for free android and ios app intelligence. AppGoblin has the biggest free dashboard to browse mobile apps and the SDKs they use for advertising, product analytics and other open source libraries. AppGoblin also has live advertising information for which apps are currently advertising. 
 
 ## Data files
 
 Due to 100mb limits, files are compressed and do not contain 'all' the data. If you don't see data you're looking for, feel free to ask.
 
-- `live_store_apps.tsv.xz`: Apps that are currently live on the store, since there are fewer apps, I included more data such as names and categories.
-- `store_apps.tsv.xz`: All apps in the database, many of which are no longer live on the stores, but without names and categories.
+- `live_store_apps.tsv.xz`: Apps that are currently live on the Google Play and Apple App Store. This TSV includes names and categories.
+- `store_apps.tsv.xz`: All Appgoblin's known 4m+ Android and iOS app store ids. Many of which are no longer live on the app stores.
 - `store_apps_metrics.tsv.xz`: All live apps with metrics such as installs, rating, review count from AppGoblin.
 
 ## Column Descriptions

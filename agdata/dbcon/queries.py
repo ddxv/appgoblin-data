@@ -35,6 +35,9 @@ QUERY_APPS_COMPANIES = load_sql_file(
 QUERY_LIVE_STORE_APPS = load_sql_file(
     "query_live_store_apps.sql",
 )
+QUERY_APP_DESCRIPTIONS = load_sql_file(
+    "query_app_descriptions.sql",
+)
 
 
 def query_store_apps() -> pd.DataFrame:
@@ -61,6 +64,34 @@ def query_live_store_apps() -> pd.DataFrame:
     return df
 
 
+def get_all_latest_descriptions(
+    chunksize: Union[int, None] = None,
+) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
+    """
+    Get app descriptions.
+
+    Args:
+        chunksize: If provided, returns an iterator of DataFrames with specified chunk size
+                  If None, returns a single DataFrame
+    """
+    # Convert the SQL query to use parameters safely
+
+    # Read from database in chunks if chunksize is specified
+    df_iterator = pd.read_sql(
+        QUERY_APP_DESCRIPTIONS,
+        DBCON.engine,
+        chunksize=chunksize,
+    )
+
+    if chunksize is None:
+        # If no chunking, process the entire DataFrame at once
+        df = next(df_iterator)
+        return process_dataframe(df)
+    else:
+        # If chunking, return a generator that processes each chunk
+        return (process_dataframe(chunk) for chunk in df_iterator)
+
+
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
     Process a DataFrame chunk with the required transformations.
@@ -85,25 +116,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 def get_all_latest_descriptions(
     chunksize: Union[int, None] = None,
 ) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
-    """Get all latest descriptions for all apps with optional chunked processing."""
-    sel_query = """WITH latest_descriptions AS (
-    SELECT DISTINCT ON (sad.store_app)
-        sad.id AS description_id,
-        sad.store_app,
-        sad.description_short,
-        sad.description,
-        sad.updated_at AS description_last_updated
-    FROM
-        store_apps_descriptions AS sad
-    WHERE
-        sad.language_id = 1
-    ORDER BY
-        sad.store_app ASC,
-        sad.updated_at DESC
-    )
-    SELECT CASE WHEN sa.store = 1 THEN 'Android' ELSE 'iOS' END AS appstore, sa.store_id, sa.category, ld.description_short, ld.description, ld.description_last_updated from latest_descriptions ld
-    LEFT JOIN frontend.store_apps_overview sa ON ld.store_app = sa.id
-    ;"""
+
     df_or_iterator = pd.read_sql(
         sel_query,
         con=DBCON.engine,

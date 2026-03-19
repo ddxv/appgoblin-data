@@ -9,8 +9,7 @@ SELECT
     sa.ad_supported,
     sa.in_app_purchases,
     sa.release_date,
-    sa.updated_at AS appgoblin_updated_at,
-    cr.outcome AS last_crawl_result 
+    sa.updated_at AS appgoblin_updated_at
 FROM
     store_apps sa
 LEFT JOIN developers d ON sa.developer = d.id 

@@ -2,7 +2,6 @@
 
 import pathlib
 from typing import Iterator, Union
-import numpy as np
 
 import pandas as pd
 from sqlalchemy import text
@@ -23,112 +22,48 @@ def load_sql_file(file_name: str) -> str:
         return text(file.read())
 
 
-QUERY_STORE_APPS = load_sql_file(
-    "query_store_apps.sql",
-)
-QUERY_STORE_APPS_METRICS = load_sql_file(
-    "query_store_apps_metrics.sql",
-)
-QUERY_APPS_COMPANIES = load_sql_file(
-    "query_store_apps_companies.sql",
-)
-QUERY_LIVE_STORE_APPS = load_sql_file(
-    "query_live_store_apps.sql",
-)
-QUERY_APP_DESCRIPTIONS = load_sql_file(
-    "query_app_descriptions.sql",
-)
+QUERY_STORE_APPS = load_sql_file("query_store_apps.sql")
+QUERY_STORE_APPS_METRICS = load_sql_file("query_store_apps_metrics.sql")
+QUERY_LIVE_STORE_APPS = load_sql_file("query_live_store_apps.sql")
+QUERY_APP_DESCRIPTIONS = load_sql_file("query_app_descriptions.sql")
+
+
+def _read_sql(
+    query: str,
+    chunksize: Union[int, None] = None,
+) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
+    """Read SQL as either a full DataFrame or a chunk iterator."""
+    return pd.read_sql(query, con=DBCON.engine, chunksize=chunksize)
 
 
 def query_store_apps() -> pd.DataFrame:
     """Get all apps and developer info."""
-    df = pd.read_sql(QUERY_STORE_APPS, con=DBCON.engine)
-    return df
+    return _read_sql(QUERY_STORE_APPS)
 
 
 def query_store_apps_metrics() -> pd.DataFrame:
-    """Get all apps and developer info."""
-    df = pd.read_sql(QUERY_STORE_APPS_METRICS, con=DBCON.engine)
-    return df
-
-
-def query_store_apps_companies() -> pd.DataFrame:
-    """Get all apps and developer info."""
-    df = pd.read_sql(QUERY_APPS_COMPANIES, con=DBCON.engine)
-    return df
+    """Get all apps metrics and developer info."""
+    return _read_sql(QUERY_STORE_APPS_METRICS)
 
 
 def query_live_store_apps() -> pd.DataFrame:
-    """Get all apps and developer info."""
-    df = pd.read_sql(QUERY_LIVE_STORE_APPS, con=DBCON.engine)
-    return df
+    """Get all currently live apps and info."""
+    return _read_sql(QUERY_LIVE_STORE_APPS)
 
 
 def get_all_latest_descriptions(
     chunksize: Union[int, None] = None,
 ) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
-    """
-    Get app descriptions.
-
-    Args:
-        chunksize: If provided, returns an iterator of DataFrames with specified chunk size
-                  If None, returns a single DataFrame
-    """
-    # Convert the SQL query to use parameters safely
-
-    # Read from database in chunks if chunksize is specified
-    df_iterator = pd.read_sql(
-        QUERY_APP_DESCRIPTIONS,
-        DBCON.engine,
-        chunksize=chunksize,
-    )
-
-    if chunksize is None:
-        # If no chunking, process the entire DataFrame at once
-        df = next(df_iterator)
-        return process_dataframe(df)
-    else:
-        # If chunking, return a generator that processes each chunk
-        return (process_dataframe(chunk) for chunk in df_iterator)
+    """Get latest app descriptions as full data or chunks."""
+    return _read_sql(QUERY_APP_DESCRIPTIONS, chunksize=chunksize)
 
 
-def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Process a DataFrame chunk with the required transformations.
-    """
-    # Create a copy to avoid modifying the original DataFrame
-    df = df.copy()
-
-    # Apply transformations
-    df["store"] = df["store"].replace({1: "Android", 2: "iOS"})
-    df["developer_id"] = df["developer_id"].astype(str)
-
-    # Use numpy.select for more efficient conditional logic
-    conditions = [df["store"] == "Android"]
-    choices = ["https://play.google.com/store/apps/details?id=" + df["store_id"]]
-    default = "https://apps.apple.com/-/app/-/id" + df["store_id"]
-
-    df["store_url"] = np.select(conditions, choices, default=default)
-
-    return df
-
-
-def get_all_latest_descriptions(
+def get_store_apps_metrics(
     chunksize: Union[int, None] = None,
 ) -> Union[pd.DataFrame, Iterator[pd.DataFrame]]:
-
-    df_or_iterator = pd.read_sql(
-        sel_query,
-        con=DBCON.engine,
-        chunksize=chunksize,
-    )
-
-    if chunksize is None:
-        return df_or_iterator
-
-    return df_or_iterator
+    """Get store apps metrics as full data or chunks."""
+    return _read_sql(QUERY_STORE_APPS_METRICS, chunksize=chunksize)
 
 
 logger.info("set db engine")
 DBCON = get_db_connection()
-DBCON.set_engine()

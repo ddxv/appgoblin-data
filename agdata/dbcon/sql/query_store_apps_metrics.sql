@@ -7,9 +7,9 @@ SELECT
     sa.price,
     sa.ad_supported,
     sa.in_app_purchases,
-    agml.installs AS installs,
-    agml.rating_count AS rating_count,
-    agml.rating
+    agml.total_installs,
+    agml.total_ratings AS total_ratings,
+    agml.rating,
     sa.store_last_updated,
     sa.release_date,
     sa.updated_at AS appgoblin_updated_at,

@@ -1,21 +1,17 @@
-from helper_scripts.dbcon.queries import (
-    query_store_apps_companies,
+from agdata.dbcon.queries import (
     query_store_apps,
     query_live_store_apps,
-    query_store_apps_metrics,
 )
 
 import pandas as pd
 import numpy as np
 
-from helper_scripts.config import get_logger
+from agdata.config import get_logger
 
 logger = get_logger(__name__)
 
 TABLES_DICT = {
-    "store_apps_companies": query_store_apps_companies,  # still too big
     "store_apps": query_store_apps,
-    "store_apps_metrics": query_store_apps_metrics,
     "live_store_apps": query_live_store_apps,
 }
 

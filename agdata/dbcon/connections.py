@@ -133,6 +133,7 @@ def get_db_connection(server_name: str = "madrone") -> PostgresCon:
     """
     use_ssh = CONFIG[server_name].get("use_ssh", False)
 
+
     if use_ssh:
         ssh_local_port = start_ssh_tunnel(server_name)
         host = "127.0.0.1"
